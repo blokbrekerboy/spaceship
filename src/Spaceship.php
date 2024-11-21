@@ -81,6 +81,12 @@ class Spaceship
         }
     }
 
+    // Refuel method
+    public function refuel($amount)
+    {
+        $this->fuel += $amount;
+    }
+
     // Hit
     // Wat is een parameter? Waarom hier wel? Data moet van buiten de scope van de functie komen, dus hebben we
     // de parameter(s) nodig om dit voor elkaar te krijgen. Ze het als een soort doorgeefluik.
@@ -115,4 +121,34 @@ class Spaceship
     // Get/Set
     // Deze zijn voor de volgende les en vanwege de public properties nog niet nodig.
 
+    // Getters and Setters
+    public function getAmmo(): int
+    {
+        return $this->ammo;
+    }
+
+    public function setAmmo(int $ammo)
+    {
+        $this->ammo = $ammo;
+    }
+
+    public function getFuel(): int
+    {
+        return $this->fuel;
+    }
+
+    public function setFuel(int $fuel)
+    {
+        $this->fuel = $fuel;
+    }
+
+    public function getHitPoints(): int
+    {
+        return $this->hitPoints;
+    }
+
+    public function setHitPoints(int $hitPoints)
+    {
+        $this->hitPoints = $hitPoints;
+    }
 }

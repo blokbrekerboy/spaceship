@@ -54,4 +54,15 @@ class Fighter extends Spaceship
             return 0;
         }
     }
+
+    // Getters and Setters for canonballs
+    public function getCanonballs(): int
+    {
+        return $this->canonballs;
+    }
+
+    public function setCanonballs(int $canonballs)
+    {
+        $this->canonballs = $canonballs;
+    }
 }
