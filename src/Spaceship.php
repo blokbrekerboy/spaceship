@@ -1,40 +1,14 @@
 <?php
-// Peilen voorkennis:
-// Vooraf kan er aan de klas gevraagd worden:
-// - Wie heeft er al eens met klassen gewerkt?
-// - Wie weet waar de afkorting OOP voor staat?
-// - Wie heeft er al eens (per ongeluk) mee gewerkt?
-// - Heeft iemand al eens gehoord van bijvoorbeeld MVC of MVVM? Op stage bijvoorbeeld?
-//
-// Belangrijk is het om te zorgen dat studenten de meerwaarde gaan zien van het gebruiken van OOP. Het zorgt vooral
-// in het leerproces een extra belasting op zowel het (voorbereidend) werk dat gedaan moet worden, als op het abstracte
-// denkvermogen.
-// Voordelen:
-// - Minder code schrijven.
-// - Hergebruik van werkende code.
-// - Code is beter gestructureerd.
-// - Code is altijd gemakkelijk te debuggen.
-// - Code is gemakkelijker uit te breiden.
-
-// Opdracht om aan te tonen dat we ook gewend zijn om in objecten te denken kan de studenten gevraagd worden om eens
-// wat objecten te beschrijven in onderdelen en (indien mogelijk) gedrag. Voorbeelden zijn objecten in een klaslokaal,
-// maar ook het klaslokaal zelf.
-// Het vergelijk met een blauwdruk is gemakkelijk gemaakt en bijvoorbeeld woonwijken met huizen om ook een link te
-// leggen met het initializeren van een object. Eenmaal een blauwdruk, kan de 'constructor' (het bouwbedrijf)
-// vrij gemakkelijk nieuwe huizen neerzetten.
 
 class Spaceship
 {
     // Properties
-    public bool $isAlive;
-    public int $fuel;
-    public int $hitPoints;
-    public int $ammo;
+    public bool $isAlive; // Indicates if the spaceship is still operational
+    public int $fuel; // Amount of fuel the spaceship has
+    public int $hitPoints; // Health points of the spaceship
+    public int $ammo; // Ammunition available for shooting
 
-    // Constructor
-    // We maken gebruik van default values om het gebruikers (andere programmeurs) gemakkelijk te maken de code
-    // te gebruiken. Daarnaast ontbreekt de mogelijkheid binnen PHP om de contructor een overload te geven met een
-    // custom constructor.
+    // Constructor to initialize the spaceship with default or provided values
     public function __construct(
         $ammo = 100,
         $fuel = 100,
@@ -43,85 +17,84 @@ class Spaceship
         $this->ammo = $ammo;
         $this->fuel = $fuel;
         $this->hitPoints = $hitPoints;
-        // We kunnen kiezen om isAlive niet als parameter mee te geven met het argument dat
-        // er geen logische use-case is om deze mogelijkheid te bieden. En schip waar een instantie
-        // van gemaakt wordt, moet levend zijn.
         $this->isAlive = true;
     }
 
-    // Methods/Functions
-    // Het gaat hier om hele simpele vormen van implementatie van het gedrag. Het doel is hier om vooral uit te leggen
-    // dat er gedrag is van een object en hoe dit moet, niet om een heel ingewikkeld algoritme te bedenken of dit
-    // in een uitgebreide applicatie te gebruiken.
-    // Het bedenken van een functie bestaat uit een paar stappen. Allereerst, wat is een goede en niet te lange naam
-    // voor de functie die beschrijft wat de functie doet. Daarna is de functie voor intern of extern
-    // gebruik ten opzichte van het object? Ten slotte nadenken over of de functie alleen iets gaat uitvoeren waarbij
-    // het resultaat niet gebruikt hoeft te worden ergens anders of juist wel. In het laatste geval maak je gebruik van
-    // een returntype (en bedenk je welk type) en het keyword return. Zorg er in dit geval voor dat een functie altijd
-    // de mogelijkheid heeft bij de return te komen (anders krijg je een melding).
-    // Shoot
+    // Method to shoot and calculate damage
     public function shoot(): int
     {
-        // Aparte variabelen gemaakt om self explaining code uit te leggen, geen magic numbers
-        $shot = 5;
-        $damage = 10;
-        // Studenten laten bedenken hoe dit er een beetje uit kan komen te zien.
-        // Standaard schade berekenen op 10 bijvoorbeeld.
+        $shot = 5; // Ammunition used per shot
+        $damage = 10; // Damage per shot
+
         if ($this->ammo - $shot >= 0) {
-            // short-hand code uitleggen
             $this->ammo -= $shot;
-            // Hierboven is hetzelfde als:
-            // $this->ammo =  $this->ammo - $shot;
-            // Bij het bereiken van een return eindigt de uitvoer in de functie en 'springt' de code terug naar waar
-            // de functie is aangeroepen.
             return ($shot * $damage);
         } else {
-            // Hier zorgen we ervoor dat er altijd een waarde terug wordt gegeven.
-            return 0;
+            return 0; // No ammo left to shoot
         }
     }
 
-    // Refuel method
+    // Method to refuel the spaceship
     public function refuel($amount)
     {
         $this->fuel += $amount;
     }
 
-    // Hit
-    // Wat is een parameter? Waarom hier wel? Data moet van buiten de scope van de functie komen, dus hebben we
-    // de parameter(s) nodig om dit voor elkaar te krijgen. Ze het als een soort doorgeefluik.
-    // Bepaal van tevoren of je een parameter nodig hebt en waarom.
+    // Method to handle the spaceship getting hit and reducing hit points
     public function hit($damage)
     {
-        // Mogelijkheid 1:
-        //        $this->hitPoints -= $damage;
-        //        if($this->hitPoints <= 0)
-        //        {
-        //            $this->isAlive = false;
-        //        }
-
-        // Mogelijkheid 2 (gekozen om duidelijkheid):
         if ($this->hitPoints - $damage > 0) {
             $this->hitPoints -= $damage;
         } else {
-            $this->isAlive = false;
+            $this->isAlive = false; // Spaceship is destroyed
         }
     }
-    // Move
-    // Studenten kunnen hier zelf op proberen te komen.
+
+    // Method to move the spaceship, consuming fuel
     public function move()
     {
-        $fuelUsage = 2;
+        $fuelUsage = 2; // Fuel used per move
         if ($this->fuel - $fuelUsage > 0) {
             $this->fuel -= $fuelUsage;
         } else {
-            $this->fuel = 0;
+            $this->fuel = 0; // No fuel left to move
         }
     }
-    // Get/Set
-    // Deze zijn voor de volgende les en vanwege de public properties nog niet nodig.
 
-    // Getters and Setters
+    // Save the current state of the spaceship to the session
+    public function save(): int
+    {
+        $_SESSION['spaceship'] = serialize($this);
+        return 1; // 1 means success
+    }
+
+    // Load the spaceship state from the session
+    public static function load(): ?Spaceship
+    {
+        return isset($_SESSION['spaceship']) ? unserialize($_SESSION['spaceship']) : null;
+    }
+
+    // Export the current state of the spaceship as a JSON string
+    public function export(): string
+    {
+        return base64_encode(json_encode($this));
+    }
+
+    // Import the spaceship state from a JSON string
+    public static function import(string $data): ?Spaceship
+    {
+        $decoded = json_decode(base64_decode($data), true);
+        if ($decoded) {
+            $spaceship = new self();
+            foreach ($decoded as $key => $value) {
+                $spaceship->$key = $value;
+            }
+            return $spaceship;
+        }
+        return null;
+    }
+
+    // Getters and Setters for properties
     public function getAmmo(): int
     {
         return $this->ammo;
@@ -150,5 +123,97 @@ class Spaceship
     public function setHitPoints(int $hitPoints)
     {
         $this->hitPoints = $hitPoints;
+    }
+}
+
+class Fleet
+{
+    public array $spaceships; // Array to hold spaceships in the fleet
+
+    // Constructor to initialize the fleet
+    public function __construct()
+    {
+        $this->spaceships = [];
+    }
+
+    // Method to add a spaceship to the fleet
+    public function addSpaceship(Spaceship $spaceship)
+    {
+        $this->spaceships[] = $spaceship;
+    }
+
+    // Method to randomize the fleet with a given number of ships
+    public function randomizeFleet(int $numShips)
+    {
+        for ($i = 0; $i < $numShips; $i++) {
+            $type = rand(0, 1) ? 'Spaceship' : 'Fighter';
+            if ($type === 'Spaceship') {
+                $this->addSpaceship(new Spaceship(rand(50, 150), rand(50, 150), rand(50, 150)));
+            } else {
+                $this->addSpaceship(new Fighter(rand(50, 150), rand(50, 150), rand(50, 150), rand(5, 20)));
+            }
+        }
+    }
+
+    // Method to simulate a battle between two fleets
+    public function battle(Fleet $opponentFleet)
+    {
+        foreach ($this->spaceships as $ship) {
+            foreach ($opponentFleet->spaceships as $opponentShip) {
+                while ($ship->isAlive && $opponentShip->isAlive) {
+                    $damage = $ship->shoot();
+                    $opponentShip->hit($damage);
+                    if ($opponentShip->isAlive) {
+                        $damage = $opponentShip->shoot();
+                        $ship->hit($damage);
+                    }
+                }
+            }
+        }
+    }
+
+    // Save the current state of the fleet to the session
+    public function save(): int
+    {
+        $_SESSION['fleet'] = serialize($this);
+        return 1; // 1 means success
+    }
+
+    // Load the fleet state from the session
+    public static function load(): ?Fleet
+    {
+        return isset($_SESSION['fleet']) ? unserialize($_SESSION['fleet']) : null;
+    }
+
+    // Export the current state of the fleet as a JSON string
+    public function export(): string
+    {
+        return base64_encode(json_encode($this));
+    }
+
+    // Import the fleet state from a JSON string
+    public static function import(string $data): ?Fleet
+    {
+        $decoded = json_decode(base64_decode($data), true);
+        if ($decoded) {
+            $fleet = new self();
+            foreach ($decoded['spaceships'] as $spaceshipData) {
+                $fleet->spaceships[] = Spaceship::import(base64_encode(json_encode($spaceshipData)));
+            }
+            return $fleet;
+        }
+        return null;
+    }
+
+    // Method to get the ranking of spaceships in the fleet based on their score
+    public function getRanking(): array
+    {
+        $ranking = [];
+        foreach ($this->spaceships as $ship) {
+            $score = ($ship->ammo + $ship->fuel + $ship->hitPoints) / 3;
+            $ranking[] = ['ship' => $ship, 'score' => $score];
+        }
+        usort($ranking, fn($a, $b) => $b['score'] <=> $a['score']);
+        return $ranking;
     }
 }
